@@ -12,6 +12,8 @@
            xmlns:ui="http://xmlns.oracle.com/soa/designer/">
   <import namespace="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO"
           location="receivePO.wsdl" importType="wsdl"/>
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/file/POProcessing/Project1/WriteApprovalResults"
+          location="WriteApprovalResults.wsdl" importType="wsdl"/>
   <service name="receivePO" ui:wsdlLocation="receivePO.wsdl">
     <interface.wsdl interface="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.interface(execute_ptt)"/>
     <binding.ws port="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.endpoint(receivePO/execute_pt)">
@@ -22,4 +24,9 @@
   <component name="routePO">
     <implementation.mediator src="routePO.mplan"/>
   </component>
+  <reference name="WriteApprovalResults"
+             ui:wsdlLocation="WriteApprovalResults.wsdl">
+    <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/file/POProcessing/Project1/WriteApprovalResults#wsdl.interface(Write_ptt)"/>
+    <binding.jca config="WriteApprovalResults_file.jca"/>
+  </reference>
 </composite>
