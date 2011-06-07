@@ -10,4 +10,38 @@
            xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
            xmlns:orawsp="http://schemas.oracle.com/ws/2006/01/policy"
            xmlns:ui="http://xmlns.oracle.com/soa/designer/">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/CreditCardValidation/validationForCC/getCreditValidation"
+          location="getCreditValidation.wsdl" importType="wsdl"/>
+  <import namespace="http://oracle.com/sca/soapservice/CreditCardValidation/validationForCC/getStatusByCC"
+          location="getStatusByCC.wsdl" importType="wsdl"/>
+  <service name="getStatusByCC" ui:wsdlLocation="getStatusByCC.wsdl">
+    <interface.wsdl interface="http://oracle.com/sca/soapservice/CreditCardValidation/validationForCC/getStatusByCC#wsdl.interface(execute_ptt)"/>
+    <binding.ws port="http://oracle.com/sca/soapservice/CreditCardValidation/validationForCC/getStatusByCC#wsdl.endpoint(getStatusByCC/execute_pt)">
+      <property name="weblogic.wsee.wsat.transaction.flowOption"
+                type="xs:string" many="false">NEVER</property>
+    </binding.ws>
+  </service>
+  <component name="RouteRequest">
+    <implementation.mediator src="RouteRequest.mplan"/>
+  </component>
+  <reference name="getCreditValidation"
+             ui:wsdlLocation="getCreditValidation.wsdl">
+    <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/db/CreditCardValidation/validationForCC/getCreditValidation#wsdl.interface(getCreditValidation_ptt)"/>
+    <binding.jca config="getCreditValidation_db.jca"/>
+    <property name="jca.retry.count" type="xs:int" many="false" override="may">4</property>
+    <property name="jca.retry.interval" type="xs:int" many="false"
+              override="may">1</property>
+    <property name="jca.retry.backoff" type="xs:int" many="false"
+              override="may">2</property>
+    <property name="jca.retry.maxInterval" type="xs:string" many="false"
+              override="may">120</property>
+  </reference>
+  <wire>
+    <source.uri>getStatusByCC</source.uri>
+    <target.uri>RouteRequest/RouteRequest</target.uri>
+  </wire>
+  <wire>
+    <source.uri>RouteRequest/getCreditValidation</source.uri>
+    <target.uri>getCreditValidation</target.uri>
+  </wire>
 </composite>
