@@ -10,4 +10,13 @@
            xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
            xmlns:orawsp="http://schemas.oracle.com/ws/2006/01/policy"
            xmlns:ui="http://xmlns.oracle.com/soa/designer/">
+  <import namespace="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO"
+          location="receivePO.wsdl" importType="wsdl"/>
+  <service name="receivePO" ui:wsdlLocation="receivePO.wsdl">
+    <interface.wsdl interface="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.interface(execute_ptt)"/>
+    <binding.ws port="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.endpoint(receivePO/execute_pt)">
+      <property name="weblogic.wsee.wsat.transaction.flowOption"
+                type="xs:string" many="false">NEVER</property>
+    </binding.ws>
+  </service>
 </composite>
