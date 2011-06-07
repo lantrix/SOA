@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <adf-config xmlns="http://xmlns.oracle.com/adf/config"
-            xmlns:adf="http://xmlns.oracle.com/adf/config/properties">
+            xmlns:adf="http://xmlns.oracle.com/adf/config/properties"
+            xmlns:sec="http://xmlns.oracle.com/adf/security/config">
   <adf:adf-properties-child xmlns="http://xmlns.oracle.com/adf/config/properties">
     <adf-property name="adfAppUID" value="CreditCardValidation-2090"/>
   </adf:adf-properties-child>
@@ -22,4 +23,8 @@
       </persistence-config>
     </mds-config>
   </adf-mds-config>
+  <sec:adf-security-child xmlns="http://xmlns.oracle.com/adf/security/config">
+    <CredentialStoreContext credentialStoreClass="oracle.adf.share.security.providers.jps.CSFCredentialStore"
+                            credentialStoreLocation="../../src/META-INF/jps-config.xml"/>
+  </sec:adf-security-child>
 </adf-config>
