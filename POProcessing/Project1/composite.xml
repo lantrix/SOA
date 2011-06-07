@@ -19,4 +19,7 @@
                 type="xs:string" many="false">NEVER</property>
     </binding.ws>
   </service>
+  <component name="routePO">
+    <implementation.mediator src="routePO.mplan"/>
+  </component>
 </composite>
