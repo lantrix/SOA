@@ -4,4 +4,11 @@
                xmlns="http://xmlns.oracle.com/sca/1.0"
                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                xmlns:ui="http://xmlns.oracle.com/soa/designer/">
+  <service name="routePO" ui:wsdlLocation="receivePO.wsdl">
+    <interface.wsdl interface="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.interface(execute_ptt)"/>
+  </service>
+  <reference name="WriteApprovalResults"
+             ui:wsdlLocation="WriteApprovalResults.wsdl">
+    <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/file/POProcessing/Project1/WriteApprovalResults#wsdl.interface(Write_ptt)"/>
+  </reference>
 </componentType>

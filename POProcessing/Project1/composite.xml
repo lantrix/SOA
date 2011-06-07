@@ -29,4 +29,12 @@
     <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/file/POProcessing/Project1/WriteApprovalResults#wsdl.interface(Write_ptt)"/>
     <binding.jca config="WriteApprovalResults_file.jca"/>
   </reference>
+  <wire>
+    <source.uri>receivePO</source.uri>
+    <target.uri>routePO/routePO</target.uri>
+  </wire>
+  <wire>
+    <source.uri>routePO/WriteApprovalResults</source.uri>
+    <target.uri>WriteApprovalResults</target.uri>
+  </wire>
 </composite>
