@@ -1,5 +1,9 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <jpr:project xmlns:jpr="http://xmlns.oracle.com/ide/project">
+   <value n="approveLargeOrder_Namespace" v="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder"/>
+   <value n="approveLargeOrder_ProcessName" v="approveLargeOrder"/>
+   <value n="approveLargeOrder_Template" v="BPEL_ASYNC_PROCESS"/>
+   <value n="approveLargeOrder_wsdl" v="approveLargeOrder.wsdl"/>
    <hash n="component-versions">
       <value n="oracle.adfdt.controller.adfc.source.migration.AdfControllerSchemaMigrator" v="11.1.1.1.0"/>
       <value n="oracle.adfdt.controller.common.migrator.ProjectMigrator" v="11.1.1.1.0"/>
@@ -59,6 +63,7 @@
       <string v="oracle.tip.tools.ide.fabric.addin.SCAContentSetProvider/sca-content"/>
    </list>
    <value n="defaultPackage" v="project1"/>
+   <value n="Namespace" v="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder"/>
    <hash n="oracle.ide.model.ResourcePaths">
       <hash n="resourcesContentSet">
          <list n="url-path"/>
@@ -80,7 +85,6 @@
          <string v=".png"/>
          <string v=".PNG"/>
          <string v=".properties"/>
-         <string v=".xml"/>
          <string v=".ejx"/>
          <string v=".xcfg"/>
          <string v=".cpx"/>
@@ -94,7 +98,6 @@
          <string v=".xsl"/>
          <string v=".xsd"/>
          <string v=".exm"/>
-         <string v=".xml"/>
       </list>
       <value n="internalEncoding" v="MacRoman"/>
       <list n="Javac.commandline.optionlist">
@@ -339,4 +342,6 @@
          </list>
       </hash>
    </hash>
+   <value n="ProcessName" v="approveLargeOrder"/>
+   <value n="Template" v="BPEL_ASYNC_PROCESS"/>
 </jpr:project>
