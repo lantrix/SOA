@@ -4,13 +4,21 @@
    <annotationfile/>
    <iconize assign="no" invoke="no" receive="no" reply="no" transform="no" terminate="no" wait="no" compensate="no" empty="no" javaembedding="no" throw="no" validate="no" dropzone="no" sequence="no" scope="no" pick="no" while="no" flow="no" switch="no" onalarm="no" onmessage="no" catch="no" catchall="no" compensationhandler="no" optimize="no"/>
    <partnerlink_locations>
-      <partnerlink name="approveLargeOrder_client" x="1" y="353" side="left"/>
-      <partnerlink name="getCreditCardStatus" x="744" y="276" side="right"/>
+      <partnerlink name="approveLargeOrder_client" x="1" y="543" side="left"/>
+      <partnerlink name="getCreditCardStatus" x="962" y="276" side="right"/>
+      <partnerlink name="ManualPOApproval.TaskService" x="962" y="97" side="right"/>
    </partnerlink_locations>
-   <graph_layout viewport="0,142,873,626" show_swimlanes="true">
+   <graph_layout viewport="218,536,873,611" show_swimlanes="true">
       <layout_item collapsed="false" xpath="/process/process" type="Process" showhandlers="true"/>
       <layout_item collapsed="false" xpath="/process/sequence" type="Sequence"/>
       <layout_item collapsed="false" xpath="/process/sequence/switch" type="Switch"/>
+      <layout_item collapsed="false" xpath="/process/sequence/switch/case/sequence" type="Sequence"/>
+      <layout_item collapsed="true" xpath="/process/sequence/switch/case/sequence/scope" type="Scope" showhandlers="true"/>
+      <layout_item collapsed="true" xpath="/process/sequence/switch/case/sequence/scope/sequence" type="Sequence"/>
+      <layout_item collapsed="false" xpath="/process/sequence/switch/case/sequence/switch" type="Switch"/>
+      <layout_item collapsed="false" xpath="/process/sequence/switch/case/sequence/switch/case[1]/sequence" type="Sequence"/>
+      <layout_item collapsed="false" xpath="/process/sequence/switch/case/sequence/switch/case[2]/sequence" type="Sequence"/>
+      <layout_item collapsed="false" xpath="/process/sequence/switch/case/sequence/switch/otherwise/sequence" type="Sequence"/>
    </graph_layout>
    <bookmarks/>
 </graphics>

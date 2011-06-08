@@ -30,7 +30,10 @@
          xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
          xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
          xmlns:socket="http://www.oracle.com/XSL/Transform/java/oracle.tip.adapter.socket.ProtocolTranslator"
-         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap">
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:ns4="http://xmlns.oracle.com/bpel/workflow/taskService"
+         xmlns:task="http://xmlns.oracle.com/bpel/workflow/task"
+         xmlns:wfcommon="http://xmlns.oracle.com/bpel/workflow/common">
 
     <!-- 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +50,10 @@
         <partnerLink name="approveLargeOrder_client" partnerLinkType="client:approveLargeOrder" myRole="approveLargeOrderProvider" partnerRole="approveLargeOrderRequester"/>
         <partnerLink name="getCreditCardStatus" partnerRole="execute_ptt"
                      partnerLinkType="ns1:getCreditCardStatus"/>
+        <partnerLink myRole="TaskServiceCallbackListener"
+                     name="ManualPOApproval.TaskService"
+                     partnerRole="TaskService"
+                     partnerLinkType="ns4:TaskService"/>
     </partnerLinks>
 
     <!-- 
@@ -65,6 +72,8 @@
                   messageType="ns1:requestMessage"/>
         <variable name="invokeCCStatusService_execute_OutputVariable"
                   messageType="ns1:replyMessage"/>
+        <variable name="ManualPOApproval_1_globalVariable"
+                  messageType="ns4:taskMessage"/>
     </variables>
 
     <!-- 
@@ -108,13 +117,144 @@
                         <bpelx:property name="userLabel">CC is Valid</bpelx:property>
                     </bpelx:general>
                 </bpelx:annotation>
-                <assign name="assignApproval">
-                    <copy>
-                        <from expression="'approved'"/>
-                        <to variable="outputVariable" part="payload"
-                            query="/ns2:Order/ns2:status"/>
-                    </copy>
-                </assign>
+                <sequence>
+                    <scope name="ManualPOApproval_1"
+                           xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+                           xmlns:wf="http://schemas.oracle.com/bpel/extension/workflow"
+                           wf:key="ManualPOApproval_1_globalVariable">
+                        <bpelx:annotation xmlns:bpelx="http://schemas.oracle.com/bpel/extension">
+                            <bpelx:pattern patternName="bpelx:workflow"></bpelx:pattern>
+                        </bpelx:annotation>
+                        <variables>
+                            <variable name="initiateTaskInput"
+                                      messageType="ns4:initiateTaskMessage"/>
+                            <variable name="initiateTaskResponseMessage"
+                                      messageType="ns4:initiateTaskResponseMessage"/>
+                        </variables>
+                        <sequence>
+                            <assign name="ManualPOApproval_1_AssignTaskAttributes">
+                                <copy>
+                                    <from expression="string('Approve Order')"/>
+                                    <to variable="initiateTaskInput"
+                                        part="payload"
+                                        query="/ns4:initiateTask/task:task/task:title"/>
+                                </copy>
+                                <copy>
+                                    <from expression="number(3)"/>
+                                    <to variable="initiateTaskInput"
+                                        part="payload"
+                                        query="/ns4:initiateTask/task:task/task:priority"/>
+                                </copy>
+                                <copy>
+                                    <from>
+                                        <payload xmlns="http://xmlns.oracle.com/bpel/workflow/task">
+                                            <Order xmlns="http://xmlns.oracle.com/ns/order"/>
+                                        </payload>
+                                    </from>
+                                    <to variable="initiateTaskInput"
+                                        part="payload"
+                                        query="/ns4:initiateTask/task:task/task:payload"/>
+                                </copy>
+                                <copy>
+                                    <from variable="outputVariable"
+                                          part="payload" query="/ns2:Order"/>
+                                    <to variable="initiateTaskInput"
+                                        part="payload"
+                                        query="/ns4:initiateTask/task:task/task:payload/ns2:Order"/>
+                                </copy>
+                            </assign>
+                            <invoke name="initiateTask_ManualPOApproval_1"
+                                    partnerLink="ManualPOApproval.TaskService"
+                                    portType="ns4:TaskService"
+                                    operation="initiateTask"
+                                    inputVariable="initiateTaskInput"
+                                    outputVariable="initiateTaskResponseMessage"/>
+                            <receive name="receiveCompletedTask_ManualPOApproval_1"
+                                     partnerLink="ManualPOApproval.TaskService"
+                                     portType="ns4:TaskServiceCallback"
+                                     operation="onTaskCompleted"
+                                     variable="ManualPOApproval_1_globalVariable"
+                                     createInstance="no"/>
+                        </sequence>
+                    </scope>
+                    <switch name="taskSwitch">
+                        <case condition="bpws:getVariableData('ManualPOApproval_1_globalVariable', 'payload', '/task:task/task:systemAttributes/task:state') = 'COMPLETED' and bpws:getVariableData('ManualPOApproval_1_globalVariable', 'payload', '/task:task/task:systemAttributes/task:outcome') = 'REJECT'">
+                            <bpelx:annotation>
+                                <bpelx:pattern>Task outcome is REJECT</bpelx:pattern>
+                                <bpelx:general>
+                                    <bpelx:property name="userLabel">Task
+                                                                     outcome is
+                                                                     REJECT</bpelx:property>
+                                </bpelx:general>
+                            </bpelx:annotation>
+                            <sequence>
+                                <assign>
+                                    <copy>
+                                        <from variable="ManualPOApproval_1_globalVariable"
+                                              part="payload"
+                                              query="/task:task/task:payload/ns2:Order"/>
+                                        <to variable="outputVariable"
+                                            part="payload" query="/ns2:Order"/>
+                                    </copy>
+                                    <copy>
+                                        <from expression="'rejected'"/>
+                                        <to variable="outputVariable"
+                                            part="payload"
+                                            query="/ns2:Order/ns2:status"/>
+                                    </copy>
+                                </assign>
+                            </sequence>
+                        </case>
+                        <case condition="bpws:getVariableData('ManualPOApproval_1_globalVariable', 'payload', '/task:task/task:systemAttributes/task:state') = 'COMPLETED' and bpws:getVariableData('ManualPOApproval_1_globalVariable', 'payload', '/task:task/task:systemAttributes/task:outcome') = 'APPROVE'">
+                            <bpelx:annotation>
+                                <bpelx:pattern>Task outcome is APPROVE</bpelx:pattern>
+                                <bpelx:general>
+                                    <bpelx:property name="userLabel">Task
+                                                                     outcome is
+                                                                     APPROVE</bpelx:property>
+                                </bpelx:general>
+                            </bpelx:annotation>
+                            <sequence>
+                                <assign>
+                                    <copy>
+                                        <from variable="ManualPOApproval_1_globalVariable"
+                                              part="payload"
+                                              query="/task:task/task:payload/ns2:Order"/>
+                                        <to variable="outputVariable"
+                                            part="payload" query="/ns2:Order"/>
+                                    </copy>
+                                </assign>
+                                <assign name="assignApproval">
+                                    <copy>
+                                        <from expression="'approved'"/>
+                                        <to variable="outputVariable"
+                                            part="payload"
+                                            query="/ns2:Order/ns2:status"/>
+                                    </copy>
+                                </assign>
+                            </sequence>
+                        </case>
+                        <otherwise>
+                            <sequence>
+                                <assign>
+                                    <copy>
+                                        <from variable="ManualPOApproval_1_globalVariable"
+                                              part="payload"
+                                              query="/task:task/task:payload/ns2:Order"/>
+                                        <to variable="outputVariable"
+                                            part="payload" query="/ns2:Order"/>
+                                    </copy>
+                                    <copy>
+                                        <from expression="'expired'"/>
+                                        <to variable="outputVariable"
+                                            part="payload"
+                                            query="/ns2:Order/ns2:status"/>
+                                    </copy>
+                                </assign>
+                            </sequence>
+                        </otherwise>
+                    </switch>
+                </sequence>
             </case>
             <otherwise>
                 <assign name="assignInvalidCC">
