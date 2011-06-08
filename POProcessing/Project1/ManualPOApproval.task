@@ -47,6 +47,7 @@
       <allowInitiatorEditParticipants>false</allowInitiatorEditParticipants>
       <allowParticipantsEditParticipants>false</allowParticipantsEditParticipants>
       <globalCreationTask>false</globalCreationTask>
+      <taskFlowFileLocation>file:/Users/ted/jdeveloper/mywork/po/POProcessing/ApproveTaskDetails/public_html/WEB-INF/ManualPOApproval_TaskFlow.xml</taskFlowFileLocation>
       <workflowConditions/>
    </workflowConfiguration>
 </taskDefinition>
