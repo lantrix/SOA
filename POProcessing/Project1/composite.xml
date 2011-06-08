@@ -21,6 +21,9 @@
           location="approveLargeOrder.wsdl" importType="wsdl"/>
   <import namespace="http://oracle.com/sca/soapservice/CreditCardValidation/validationForCC/getStatusByCC"
           location="getStatusByCCRef.wsdl" importType="wsdl"/>
+  <import namespace="http://xmlns.oracle.com/bpel/workflow/taskService"
+          location="oramds:/soa/shared/workflow/TaskServiceInterface.wsdl"
+          importType="wsdl"/>
   <service name="receivePO" ui:wsdlLocation="receivePO.wsdl">
     <interface.wsdl interface="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.interface(execute_ptt)"/>
     <binding.ws port="http://oracle.com/sca/soapservice/POProcessing/Project1/receivePO#wsdl.endpoint(receivePO/execute_pt)">
@@ -33,6 +36,9 @@
   </component>
   <component name="approveLargeOrder">
     <implementation.bpel src="approveLargeOrder.bpel"/>
+  </component>
+  <component name="ManualPOApproval">
+    <implementation.workflow src="ManualPOApproval.task"/>
   </component>
   <reference name="WriteApprovalResults"
              ui:wsdlLocation="WriteApprovalResults.wsdl">
@@ -64,5 +70,9 @@
   <wire>
     <source.uri>routePO/approveLargeOrder.approveLargeOrder_client</source.uri>
     <target.uri>approveLargeOrder/approveLargeOrder_client</target.uri>
+  </wire>
+  <wire>
+    <source.uri>approveLargeOrder/ManualPOApproval.TaskService</source.uri>
+    <target.uri>ManualPOApproval/TaskService</target.uri>
   </wire>
 </composite>
