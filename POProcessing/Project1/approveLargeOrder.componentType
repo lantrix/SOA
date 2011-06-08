@@ -9,4 +9,7 @@
     <interface.wsdl interface="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder#wsdl.interface(approveLargeOrder)"
                     callbackInterface="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder#wsdl.interface(approveLargeOrderCallback)"/>
   </service>
+  <reference name="getCreditCardStatus" ui:wsdlLocation="getStatusByCCRef.wsdl">
+    <interface.wsdl interface="http://oracle.com/sca/soapservice/CreditCardValidation/validationForCC/getStatusByCC#wsdl.interface(execute_ptt)"/>
+  </reference>
 </componentType>

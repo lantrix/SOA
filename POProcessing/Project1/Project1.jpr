@@ -1,5 +1,6 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <jpr:project xmlns:jpr="http://xmlns.oracle.com/ide/project">
+   <url n="approveLargeOrder_bpelFileURL" path="approveLargeOrder.bpel"/>
    <value n="approveLargeOrder_Namespace" v="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder"/>
    <value n="approveLargeOrder_ProcessName" v="approveLargeOrder"/>
    <value n="approveLargeOrder_Template" v="BPEL_ASYNC_PROCESS"/>

@@ -14,7 +14,23 @@
          xmlns:client="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder"
          xmlns:ora="http://schemas.oracle.com/xpath/extension"
          xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
-         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns1="http://oracle.com/sca/soapservice/CreditCardValidation/validationForCC/getStatusByCC"
+         xmlns:ns2="http://xmlns.oracle.com/ns/order"
+         xmlns:ns3="http://www.globalcompany.com/ns/CCAuthorizationService"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:mhdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.mediator.service.common.functions.MediatorExtnFunction"
+         xmlns:bpel2="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:oraext="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:dvm="http://www.oracle.com/XSL/Transform/java/oracle.tip.dvm.LookupValue"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:med="http://schemas.oracle.com/mediator/xpath"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:bpm="http://xmlns.oracle.com/bpmn20/extensions"
+         xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:socket="http://www.oracle.com/XSL/Transform/java/oracle.tip.adapter.socket.ProtocolTranslator"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap">
 
     <!-- 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +45,8 @@
       with the client role are automatically set using WS-Addressing.
     -->
         <partnerLink name="approveLargeOrder_client" partnerLinkType="client:approveLargeOrder" myRole="approveLargeOrderProvider" partnerRole="approveLargeOrderRequester"/>
+        <partnerLink name="getCreditCardStatus" partnerRole="execute_ptt"
+                     partnerLinkType="ns1:getCreditCardStatus"/>
     </partnerLinks>
 
     <!-- 
@@ -43,6 +61,10 @@
 
         <!-- Reference to the message that will be sent back to the requester during callback -->
         <variable name="outputVariable" messageType="client:approveLargeOrderResponseMessage"/>
+        <variable name="invokeCCStatusService_execute_InputVariable"
+                  messageType="ns1:requestMessage"/>
+        <variable name="invokeCCStatusService_execute_OutputVariable"
+                  messageType="ns1:replyMessage"/>
     </variables>
 
     <!-- 
@@ -59,6 +81,51 @@
         <!-- 
           Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
         -->
+        <assign name="assignCCNumber">
+            <copy>
+                <from variable="inputVariable" part="payload"
+                      query="/ns2:Order/ns2:creditCardInfo/ns2:cardNumber"/>
+                <to variable="invokeCCStatusService_execute_InputVariable"
+                    part="request"
+                    query="/ns3:creditcardStatusRequest/ns3:CCNumber"/>
+            </copy>
+            <copy>
+                <from variable="inputVariable" part="payload"
+                      query="/ns2:Order"/>
+                <to variable="outputVariable" part="payload"
+                    query="/ns2:Order"/>
+            </copy>
+        </assign>
+        <invoke name="invokeCCStatusService"
+                inputVariable="invokeCCStatusService_execute_InputVariable"
+                outputVariable="invokeCCStatusService_execute_OutputVariable"
+                partnerLink="getCreditCardStatus" portType="ns1:execute_ptt"
+                operation="execute"/>
+        <switch name="evaluateCCStatus">
+            <case condition="bpws:getVariableData('invokeCCStatusService_execute_OutputVariable','reply','/ns3:creditcardStatus') = 'VALID'">
+                <bpelx:annotation>
+                    <bpelx:general>
+                        <bpelx:property name="userLabel">CC is Valid</bpelx:property>
+                    </bpelx:general>
+                </bpelx:annotation>
+                <assign name="assignApproval">
+                    <copy>
+                        <from expression="'approved'"/>
+                        <to variable="outputVariable" part="payload"
+                            query="/ns2:Order/ns2:status"/>
+                    </copy>
+                </assign>
+            </case>
+            <otherwise>
+                <assign name="assignInvalidCC">
+                    <copy>
+                        <from expression="'invalidCreditCard'"/>
+                        <to variable="outputVariable" part="payload"
+                            query="/ns2:Order/ns2:status"/>
+                    </copy>
+                </assign>
+            </otherwise>
+        </switch>
         <invoke name="callbackClient" partnerLink="approveLargeOrder_client" portType="client:approveLargeOrderCallback" operation="processResponse" inputVariable="outputVariable"/>
     </sequence>
 </process>
