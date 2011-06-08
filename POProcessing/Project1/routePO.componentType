@@ -11,4 +11,9 @@
              ui:wsdlLocation="WriteApprovalResults.wsdl">
     <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/file/POProcessing/Project1/WriteApprovalResults#wsdl.interface(Write_ptt)"/>
   </reference>
+  <reference name="approveLargeOrder.approveLargeOrder_client"
+             ui:wsdlLocation="approveLargeOrder.wsdl">
+    <interface.wsdl interface="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder#wsdl.interface(approveLargeOrder)"
+                    callbackInterface="http://xmlns.oracle.com/POProcessing_jws/Project1/approveLargeOrder#wsdl.interface(approveLargeOrderCallback)"/>
+  </reference>
 </componentType>

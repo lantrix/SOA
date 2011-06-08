@@ -61,4 +61,8 @@
     <source.uri>approveLargeOrder/getCreditCardStatus</source.uri>
     <target.uri>getCreditCardStatus</target.uri>
   </wire>
+  <wire>
+    <source.uri>routePO/approveLargeOrder.approveLargeOrder_client</source.uri>
+    <target.uri>approveLargeOrder/approveLargeOrder_client</target.uri>
+  </wire>
 </composite>
